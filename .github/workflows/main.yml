@@ -1,4 +1,4 @@
-name: Build and GH-Page Deploy
+name: Build and Deploy
 
 on:
   push:
@@ -6,33 +6,40 @@ on:
       - main
 
 permissions:
-  contents: write
-
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          persist-credentials: false
+          node-version: 16
 
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with: 
-          node-version: 16.15
-
-      - name: Install
+      - name: Install dependencies
         run: yarn install
 
-      - name: Build
+      - name: Build site
         run: yarn build
 
-      - name: Deploy to GH Page
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+      - name: Upload build artifacts
+        uses: actions/upload-pages-artifact@v2
         with:
-          branch: gh-pages
-          folder: dist
-          single-commit: false
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
