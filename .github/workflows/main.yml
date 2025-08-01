@@ -14,7 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -25,11 +25,11 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Build site
+      - name: Build project
         run: yarn build
 
       - name: Upload build output
-        uses: actions/upload-pages-artifact@v2  # ✅ Correct version
+        uses: actions/upload-pages-artifact@v4  # ✅ Latest version
         with:
           path: ./dist
 
@@ -43,4 +43,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4  # ✅ Latest version
